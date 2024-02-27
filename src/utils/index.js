@@ -54,6 +54,25 @@ const extractBearerToken = (authorizationHeader) => {
   // Trả về null nếu định dạng không đúng
   return null;
 };
+
+const uploadFileToS3 = (fileBuffer, bucketName, keyPrefix) => {
+  const key = `${keyPrefix}/${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  const params = {
+    Bucket: bucketName,
+    Key: key,
+    Body: fileBuffer
+  };
+
+  return new Promise((resolve, reject) => {
+    s3.upload(params, function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data.Location);
+      }
+    });
+  });
+}
 module.exports = {
   getSelectData,
   getUnSelectData,
@@ -61,4 +80,5 @@ module.exports = {
   updateNestedObjectParser,
   convertToObjectIdMongodb,
   extractBearerToken,
+  uploadFileToS3
 };
